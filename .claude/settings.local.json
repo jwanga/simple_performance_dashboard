@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo:*)"
+      "Bash(cargo:*)",
+      "WebFetch(domain:docs.rs)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

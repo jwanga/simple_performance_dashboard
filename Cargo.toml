@@ -1,6 +1,53 @@
 [package]
-name = "windows_performance_dashboard"
+name = "simple_performance_dashboard"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+eframe = "0.28"
+egui = "0.28"
+egui_plot = "0.28"
+sysinfo = "0.32"
+tokio = { version = "1.0", features = ["full"] }
+parking_lot = "0.12"
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+env_logger = "0.11"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_System_Performance",
+    "Win32_System_SystemInformation",
+] }
+
+# Test configuration
+[[test]]
+name = "integration_tests"
+path = "tests/integration_tests.rs"
+
+[dev-dependencies]
+# Additional test dependencies if needed in the future
+# mockall = "0.11"  # For mocking
+# tempfile = "3.0"  # For temporary file testing
+# criterion = "0.5"  # For benchmarking
+
+# Test profiles for different scenarios
+[profile.test]
+opt-level = 0
+debug = true
+incremental = true
+
+# Faster builds for testing
+[profile.dev]
+opt-level = 0
+debug = true
+incremental = true
+
+# Release profile for production builds
+[profile.release]
+opt-level = 3
+debug = false
+lto = true
+codegen-units = 1
+panic = "abort"

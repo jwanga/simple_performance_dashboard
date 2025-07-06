@@ -14,6 +14,34 @@ This is a Windows performance monitoring dashboard written in Rust targeting Win
 - `cargo build --release --target x86_64-pc-windows-msvc` - Release build for Windows x86_64
 - `cargo build --release --target aarch64-pc-windows-msvc` - Release build for Windows ARM64
 
+#### ARM64 Build Issues on Windows
+If you encounter "The parameter is incorrect. (os error 87)" when building for ARM64:
+
+1. **Clean and retry**:
+   ```bash
+   cargo clean
+   cargo build --target aarch64-pc-windows-msvc
+   ```
+
+2. **Use shorter path**: Move project to a shorter path (e.g., `C:\temp\dashboard`)
+
+3. **Set environment variable**:
+   ```bash
+   set CARGO_TARGET_DIR=C:\temp\cargo-target
+   cargo build --target aarch64-pc-windows-msvc
+   ```
+
+4. **Install ARM64 target** (if not already installed):
+   ```bash
+   rustup target add aarch64-pc-windows-msvc
+   ```
+
+5. **Alternative: Use cross-compilation tool**:
+   ```bash
+   cargo install cross
+   cross build --target aarch64-pc-windows-msvc
+   ```
+
 ### Testing
 - `cargo test` - Run all tests
 - `cargo test <test_name>` - Run specific test

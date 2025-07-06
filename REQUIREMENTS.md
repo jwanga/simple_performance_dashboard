@@ -1,8 +1,8 @@
-# Project: Windows Performance Dashboard
+# Project: Simple Performance Dashboard
 
 ## 1. Overview
 
-A lightweight, real-time desktop application for Windows that monitors key hardware performance metrics. The application will display current, minimum, and maximum values for each metric from the start of the session and plot their history on a time-series graph. The application must prioritize computational and memory efficiency to minimize its own impact on system performance.
+A lightweight, real-time desktop application that monitors key hardware performance metrics. The application will display current, minimum, and maximum values for each metric from the start of the session and plot their history on a time-series graph. The application must prioritize computational and memory efficiency to minimize its own impact on system performance.
 
 ## 2. Core Functional Requirements
 
@@ -15,42 +15,115 @@ For each metric listed below, the application must display:
 - **Current Value:** The most recently polled value.
 - **Session Min:** The minimum value recorded since the application was launched.
 - **Session Max:** The maximum value recorded since the application was launched.
+- **Time-Series Graph:** A real-time graph plotting the metric's history over the session duration.
+
+**IMPORTANT**: Every single metric must include all four components above (current/min/max values plus graph). This applies to all metric types including binary status indicators (e.g., thermal throttling status), numeric values, temperatures, speeds, and any other monitored parameters. No exceptions.
 
 ### 2.2. Graphical Display
 
-- For each metric, a real-time graph will plot the value's history over a rolling 60-second window.
-- The Y-axis of each graph should dynamically scale to the session's Min/Max values for that metric.
-- The X-axis will represent the 60-second time window.
+#### Graph Axis Bounds (Value Ranges)
+  - Y-axis bounds: dynamically adjust to session minimum and maximum values
+  - X-axis bounds: 0 to elapsed time since session started (seconds)
+
+#### Graph Scaling (Fit Behavior)
+  - Graph scales to fit fixed widget size without scrolling
+  - All data remains visible within widget dimensions
+  - Widget size stays constant, graph content stretches/shrinks to fit
+
+#### Graph Interaction
+  - **Crosshair Display**: When hovering over a graph, display a crosshair with data values
+  - **X-axis value**: Show elapsed time in seconds since session start at cursor position
+  - **Y-axis value**: Show the actual metric value (with appropriate units) at cursor position
+  - **Data interpolation**: If cursor is between data points, interpolate to show estimated value at that time
+  - **Unit formatting**: Display values with proper units (%, MHz, °C, RPM, MB) matching the metric type
 
 ### 2.3. Monitored Metrics
 
 #### CPU Metrics
 
-- Overall Utilization (%)
+- CPU Utilization (%)
 - Core Clock Speed (MHz)
+- CPU Core Voltage (V)
+- CPU Power Consumption (W)
 - Package Temperature (°C)
 - Hottest Core Temperature (°C)
-- Thermal Throttling Status (Active/Inactive)
+- Thermal Throttling Status (1=Active/0=Inactive)
 
 #### GPU Metrics (Primary GPU)
 
+- GPU Utilization (%)
 - Core Clock Speed (MHz)
+- GPU Memory Utilization (MB)
+- GPU Core Voltage (V)
+- GPU power consumption (W)
 - Package Temperature (°C)
 - Hotspot Temperature (°C)
-- Thermal Throttling Status (Active/Inactive)
+- Thermal Throttling Status (1=Active/0=Inactive)
 
 #### Memory Metrics
 
-- Overall RAM Utilization (%)
-- RAM Utilization (MB)
+- Memory Utilization (MB)
 - Memory Clock Speed (MHz)
+- Memory Temperature (°C)
 
-#### System & Environmental Metrics
+#### Storage Metrics
 
-- Motherboard/Chipset Temperature (°C)
-- Chassis/System Temperature (°C)
-- All available system fan speeds (RPM), labeled clearly.
-- All other available, uniquely-named temperature sensors (°C).
+- Drive read speed (MB/s)
+- Drive write speed (MB/s)
+- Drive temperature (°C)
+
+#### Motherboard Metrics
+- Chipset Temperature (°C)
+- Chassis Temperature (°C)
+- AIO Pump Speed (RPM)
+- Chassis Fan Speed (RPM)
+- Chipset Fan Speed (RPM)
+
+### 2.4: User Interface Organization
+
+  ##### Metric Grouping
+
+  - All metrics must be organized into logical, collapsible sections:
+    - CPU Metrics: All CPU-related metrics.
+    - GPU Metrics: All GPU-related metrics.
+    - Memory Metrics: All memory-related metrics.
+    - Storage Metrics: All storage-related metrics.
+    - Motherboard Metrics: All motherboard-related metrics.
+
+  #### Collapsible Section Behavior
+
+  - Each metric section must be implemented as a collapsible/expandable panel
+  - Section headers display the category name with expand/collapse indicator (▼/▶)
+  
+  ##### Default Expansion States (Data-Aware)
+  - **Sections with available data**: Must be expanded by default, allowing users to immediately see all available metrics
+  - **Sections without available data**: Must be collapsed by default, with grayed-out titles and "(No Data)" suffix to clearly indicate unavailability
+  - **Dynamic behavior**: As the application collects data from sensors, sections automatically transition from collapsed/grayed to expanded/normal appearance
+  
+  ##### User Interaction
+  - Users can click section headers to manually toggle visibility of any section regardless of data availability
+  - Manual user choices override the default data-aware behavior
+  
+  ##### Visual Indicators
+  - **Available data**: White text, normal section title, expanded by default
+  - **No data**: Gray text, section title with "(No Data)" suffix, collapsed by default
+  - Clear expand/collapse indicators (▼/▶) provided by the UI framework
+
+  #### Section Layout
+
+  - Within each expanded section, metrics should be displayed in a 2-column grid layout
+  - Each metric occupies one column position with:
+    - Metric name as header
+    - Current/Min/Max value display
+    - Time-series graph below values
+  - **ALL metrics must follow this layout consistently**, including binary status indicators (thermal throttling, etc.) which must display their current/min/max states and graph their history over time
+  - Each metric should have a consistent visual style for headers, values, and graphs regardless of data type
+
+  #### Visual Hierarchy
+
+  - Section headers should be visually distinct from metric headers
+  - Consistent spacing and grouping within each section
+  - Clear separation between different metric sections
 
 ## 3. Non-Functional & Technical Requirements
 
@@ -69,7 +142,9 @@ For each metric listed below, the application must display:
 ### 3.3. Error Handling
 
 - If a sensor or metric is unavailable on the host system, display "N/A" instead of a value and disable its corresponding graph.
+If a sensor or metric is unavailable on the host system, display the graph without data. The X-axis of the graph without data should still scale with elapsed time since the session started.
 - The application should handle unexpected sensor read failures gracefully without crashing.
+- save all errors to a log file in the application directory for debugging purposes. Rewrite the log file on each session start to avoid accumulating old errors.
 
 ## 4. Logical Architecture
 
