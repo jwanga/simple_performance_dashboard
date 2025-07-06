@@ -509,16 +509,6 @@ impl eframe::App for PerformanceApp {
             
             ui.separator();
             
-            // Display polling interval
-            {
-                let state = self.state.read();
-                ui.horizontal(|ui| {
-                    ui.label("Polling Interval:");
-                    ui.label(format!("{} ms", state.polling_interval_ms));
-                });
-            }
-            
-            ui.separator();
             
             egui::ScrollArea::vertical().show(ui, |ui| {
                 self.render_cpu_section(ui);
