@@ -133,13 +133,18 @@ For each metric listed below, the application must display:
 - **GUI Framework:** Use the `egui` crate for the user interface. It is well-suited for simple, immediate-mode GUIs and integrates well.
 - **Hardware Interrogation:** Use the `liboem` or a similar comprehensive hardware monitoring library for Rust on Windows to fetch sensor data. This avoids direct OS-level calls.
 
-### 3.2. Performance Constraints
+### 3.2. Vendor Compatibility
+- The application must support Intel, AMD and Apple Silicon CPUs, Make sure you implement all appropriate API's and detect which ones to use at run time.
+- The application must support NVIDIA, AMD, Intel and Apple Silicon GPUs, Make sure you implement all appropriate API's and detect which ones to use at run time.
+- Do not leave any metric unsupported. Research the appropriate libraries and APIs to ensure all metrics can be read on all supported hardware.
+
+### 3.3. Performance Constraints
 
 - **CPU Usage:** The application's own CPU usage should not exceed 2% on a modern 4-core CPU.
 - **Memory Usage:** The application's memory footprint should remain under 100MB.
 - **Efficiency:** The application must be architected to ensure that the monitoring and UI rendering loops do not interfere with each other or introduce significant system load.
 
-### 3.3. Error Handling
+### 3.. Error Handling
 
 - If a sensor or metric is unavailable on the host system, display "N/A" instead of a value and disable its corresponding graph.
 If a sensor or metric is unavailable on the host system, display the graph without data. The X-axis of the graph without data should still scale with elapsed time since the session started.

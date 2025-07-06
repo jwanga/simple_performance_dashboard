@@ -3,5 +3,7 @@
 
 pub mod model;
 pub mod hardware; 
+pub mod hardware_detection;
+pub mod monitors;
 pub mod logger;
 pub mod ui;

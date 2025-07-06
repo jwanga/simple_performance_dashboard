@@ -1,5 +1,7 @@
 mod model;
 mod hardware;
+mod hardware_detection;
+mod monitors;
 mod ui;
 mod logger;
 

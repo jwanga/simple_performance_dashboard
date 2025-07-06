@@ -4,8 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["nvidia"]
+default = ["nvidia", "amd", "intel", "apple", "cpuid"]
 nvidia = ["nvml-wrapper"]
+amd = []
+intel = []
+apple = []
+cpuid = ["raw-cpuid"]
 
 [dependencies]
 eframe = "0.28"
@@ -18,13 +22,25 @@ chrono = { version = "0.4", features = ["serde"] }
 log = "0.4"
 env_logger = "0.11"
 nvml-wrapper = { version = "0.10", optional = true }
+raw-cpuid = { version = "11.0", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.58", features = [
     "Win32_Foundation",
     "Win32_System_Performance",
     "Win32_System_SystemInformation",
+    "Win32_System_Registry",
+    "Win32_System_Wmi",
 ] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Apple-specific dependencies would go here
+# core-foundation = "0.9"
+# io-kit-sys = "0.4"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# Linux-specific dependencies would go here  
+# libudev = "0.3"
 
 # Test configuration
 [[test]]

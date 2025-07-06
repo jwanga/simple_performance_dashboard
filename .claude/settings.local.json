@@ -3,7 +3,8 @@
     "allow": [
       "Bash(cargo:*)",
       "WebFetch(domain:docs.rs)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
