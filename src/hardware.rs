@@ -4,20 +4,39 @@ use sysinfo::{System, Components};
 use crate::model::SharedAppState;
 use crate::logger;
 
+#[cfg(feature = "nvidia")]
+use nvml_wrapper::Nvml;
+
 pub struct HardwarePoller {
     state: SharedAppState,
     system: System,
     components: Components,
     polling_interval: Duration,
+    #[cfg(feature = "nvidia")]
+    nvml: Option<Nvml>,
 }
 
 impl HardwarePoller {
     pub fn new(state: SharedAppState, polling_interval_ms: u64) -> Self {
+        #[cfg(feature = "nvidia")]
+        let nvml = match Nvml::init() {
+            Ok(nvml) => {
+                logger::log_info("NVML initialized successfully");
+                Some(nvml)
+            }
+            Err(e) => {
+                logger::log_error("Failed to initialize NVML", &e);
+                None
+            }
+        };
+        
         Self {
             state,
             system: System::new_all(),
             components: Components::new_with_refreshed_list(),
             polling_interval: Duration::from_millis(polling_interval_ms),
+            #[cfg(feature = "nvidia")]
+            nvml,
         }
     }
     
@@ -91,22 +110,58 @@ impl HardwarePoller {
     }
     
     fn update_gpu_metrics(&mut self) -> HardwareResult<()> {
-        // GPU metrics are limited in sysinfo
-        // For comprehensive GPU monitoring, we'd need GPU-specific libraries
-        // like NVML for NVIDIA or ADL for AMD
-        // For now, we'll implement basic placeholders
-        
         let mut state = self.state.write();
         
-        // GPU temperature might be available through components
-        let gpu_temp = self.get_gpu_temperature();
-        if let Some(temp) = gpu_temp {
-            state.gpu.package_temperature.update(temp);
+        #[cfg(feature = "nvidia")]
+        if let Some(ref nvml) = self.nvml {
+            // Try to get the first GPU device
+            if let Ok(device_count) = nvml.device_count() {
+                if device_count > 0 {
+                    if let Ok(device) = nvml.device_by_index(0) {
+                        // GPU Utilization
+                        if let Ok(utilization) = device.utilization_rates() {
+                            state.gpu.utilization.update(utilization.gpu as f32);
+                        }
+                        
+                        // GPU Clock Speed
+                        if let Ok(clock_speed) = device.clock_info(nvml_wrapper::enum_wrappers::device::Clock::Graphics) {
+                            state.gpu.clock_speed.update(clock_speed as u32);
+                        }
+                        
+                        // GPU Memory Utilization
+                        if let Ok(memory_info) = device.memory_info() {
+                            let used_mb = (memory_info.used / 1024 / 1024) as u64;
+                            state.gpu.memory_utilization.update(used_mb);
+                        }
+                        
+                        // GPU Temperature
+                        if let Ok(temp) = device.temperature(nvml_wrapper::enum_wrappers::device::TemperatureSensor::Gpu) {
+                            state.gpu.package_temperature.update(temp as f32);
+                        }
+                        
+                        // GPU Power Consumption
+                        if let Ok(power) = device.power_usage() {
+                            let power_watts = (power as f32) / 1000.0; // Convert mW to W
+                            state.gpu.power_consumption.update(power_watts);
+                        }
+                        
+                        // GPU Thermal Throttling
+                        if let Ok(throttle_reasons) = device.current_throttle_reasons() {
+                            let is_throttling = !throttle_reasons.is_empty();
+                            state.gpu.thermal_throttling.update(is_throttling);
+                        }
+                    }
+                }
+            }
         }
         
-        // Note: GPU utilization, clock speed, memory utilization, voltage, power consumption
-        // require GPU-specific APIs (NVML, ADL, etc.)
-        // In a production system, you'd integrate with vendor-specific SDKs
+        // Fallback: GPU temperature might be available through components
+        if state.gpu.package_temperature.current.is_none() {
+            let gpu_temp = self.get_gpu_temperature();
+            if let Some(temp) = gpu_temp {
+                state.gpu.package_temperature.update(temp);
+            }
+        }
         
         Ok(())
     }
