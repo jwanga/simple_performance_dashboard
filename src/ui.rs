@@ -209,7 +209,7 @@ impl PerformanceApp {
                 // Right column
                 self.render_metric_section(
                     &mut columns[1],
-                    "CPU Package Temperature",
+                    "CPU Temperature",
                     &state.cpu.package_temperature,
                     "°C",
                     |v| format!("{:.1}", v),
@@ -304,7 +304,7 @@ impl PerformanceApp {
                 // Right column
                 self.render_metric_section(
                     &mut columns[1],
-                    "GPU Package Temperature",
+                    "GPU Temperature",
                     &state.gpu.package_temperature,
                     "°C",
                     |v| format!("{:.1}", v),
