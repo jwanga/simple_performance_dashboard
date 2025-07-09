@@ -80,7 +80,6 @@ pub struct CpuMetrics {
     pub core_voltage: MetricValue<f32>,          // Volts
     pub power_consumption: MetricValue<f32>,     // Watts
     pub package_temperature: MetricValue<f32>,   // Celsius
-    pub hotspot_temperature: MetricValue<f32>,   // Celsius
     pub thermal_throttling: MetricValue<bool>,   // Active/Inactive
 }
 
@@ -92,7 +91,6 @@ pub struct GpuMetrics {
     pub core_voltage: MetricValue<f32>,          // Volts
     pub power_consumption: MetricValue<f32>,     // Watts
     pub package_temperature: MetricValue<f32>,   // Celsius
-    pub hotspot_temperature: MetricValue<f32>,   // Celsius
     pub thermal_throttling: MetricValue<bool>,   // Active/Inactive
 }
 
@@ -412,7 +410,6 @@ mod tests {
         assert!(cpu.core_voltage.current.is_none());
         assert!(cpu.power_consumption.current.is_none());
         assert!(cpu.package_temperature.current.is_none());
-        assert!(cpu.hotspot_temperature.current.is_none());
         assert!(cpu.thermal_throttling.current.is_none());
     }
 
@@ -425,7 +422,6 @@ mod tests {
         assert!(gpu.core_voltage.current.is_none());
         assert!(gpu.power_consumption.current.is_none());
         assert!(gpu.package_temperature.current.is_none());
-        assert!(gpu.hotspot_temperature.current.is_none());
         assert!(gpu.thermal_throttling.current.is_none());
     }
 

@@ -216,19 +216,10 @@ impl PerformanceApp {
                     session_start,
                 );
                 
-                self.render_metric_section(
-                    &mut columns[1],
-                    "CPU Hotspot Temperature",
-                    &state.cpu.hotspot_temperature,
-                    "°C",
-                    |v| format!("{:.1}", v),
-                    session_start,
-                );
-                
                 // Right column continued - Thermal throttling as a proper metric
                 self.render_metric_section(
                     &mut columns[1],
-                    "CPU Thermal Throttling",
+                    "CPU Thermal Throttling Status",
                     &state.cpu.thermal_throttling,
                     "",
                     |v| if *v { "1=Active".to_string() } else { "0=Inactive".to_string() },
@@ -267,7 +258,7 @@ impl PerformanceApp {
                 
                 self.render_metric_section(
                     &mut columns[0],
-                    "GPU Clock Speed",
+                    "Core Clock Speed",
                     &state.gpu.clock_speed,
                     " MHz",
                     |v| format!("{}", v),
@@ -311,19 +302,10 @@ impl PerformanceApp {
                     session_start,
                 );
                 
-                self.render_metric_section(
-                    &mut columns[1],
-                    "GPU Hotspot Temperature",
-                    &state.gpu.hotspot_temperature,
-                    "°C",
-                    |v| format!("{:.1}", v),
-                    session_start,
-                );
-                
                 // Right column continued - Thermal throttling as a proper metric
                 self.render_metric_section(
                     &mut columns[1],
-                    "GPU Thermal Throttling",
+                    "GPU Thermal Throttling Status",
                     &state.gpu.thermal_throttling,
                     "",
                     |v| if *v { "1=Active".to_string() } else { "0=Inactive".to_string() },
@@ -402,7 +384,7 @@ impl PerformanceApp {
                 // Left column
                 self.render_metric_section(
                     &mut columns[0],
-                    "Drive Read Speed",
+                    "Drive read speed",
                     &state.storage.read_speed,
                     " MB/s",
                     |v| format!("{:.1}", v),
@@ -411,7 +393,7 @@ impl PerformanceApp {
                 
                 self.render_metric_section(
                     &mut columns[0],
-                    "Drive Write Speed",
+                    "Drive write speed",
                     &state.storage.write_speed,
                     " MB/s",
                     |v| format!("{:.1}", v),
@@ -421,7 +403,7 @@ impl PerformanceApp {
                 // Right column
                 self.render_metric_section(
                     &mut columns[1],
-                    "Drive Temperature",
+                    "Drive temperature",
                     &state.storage.temperature,
                     "°C",
                     |v| format!("{:.1}", v),

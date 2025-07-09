@@ -46,7 +46,6 @@ For each metric listed below, the application must display:
 - CPU Core Voltage (V)
 - CPU Power Consumption (W)
 - CPU Temperature (°C)
-- CPU Hottest Core Temperature (°C)
 - CPU Thermal Throttling Status (1=Active/0=Inactive)
 
 #### GPU Metrics (Primary GPU)
@@ -55,9 +54,8 @@ For each metric listed below, the application must display:
 - Core Clock Speed (MHz)
 - GPU Memory Utilization (MB)
 - GPU Core Voltage (V)
-- GPU power consumption (W)
+- GPU Power Consumption (W)
 - GPU Temperature (°C)
-- GPU Hotspot Temperature (°C)
 - GPU Thermal Throttling Status (1=Active/0=Inactive)
 
 #### Memory Metrics
